@@ -15,11 +15,11 @@ import {
 import { AsociacionesService } from './asociaciones.service';
 import { CreateAsociacionDto } from './dto/create-asociacion.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth2/jwtauth.guard';
 import { FileService } from 'src/file/file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/file/multer.config';
 // import { GetUser } from 'src/auth2/decorator/get-user.decorator';
+import { JwtAuthGuard } from './jwtauth.guard';
 import { AuthGuard } from '@nestjs/passport';
 
 const GetUser = createParamDecorator(
@@ -62,7 +62,7 @@ export class AsociacionesController {
     return this.asociacionesService.delete(idAsociacion);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Put('update/:id')
   @UseInterceptors(FileInterceptor('profilePic', multerConfig))
   async updateAsociation(
