@@ -11,9 +11,10 @@ import { multerConfig } from './file/multer.config';
 import { DatabaseModule } from './database/database.module';
 import { PublicationsUsersModule } from './publications_users/publications_users.module';
 import { DonationsModule } from './donations/donations.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth2/auth.module';
 import { AdoptionsModule } from './adoptions/adoptions.module';
 import { StripeModule } from './stripe/stripe.module';
+
 
 @Module({
   imports: [

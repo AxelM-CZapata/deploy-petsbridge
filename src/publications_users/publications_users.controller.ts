@@ -12,15 +12,25 @@ import {
   Query,
   HttpException,
   UseGuards,
+  createParamDecorator,
+  ExecutionContext,
 } from '@nestjs/common';
 import { PublicationsUsersService } from './publications_users.service';
 import { CreatePublicationsDto } from './dto/publications_users.dto';
 import { multerConfig } from 'src/file/multer.config';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import { CreateCommentDto } from 'src/coments/comments.dto';
-import { GetUser } from 'src/auth/decorator/get-user.decorator';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { AuthGuard } from '@nestjs/passport';
+import { CreateCommentDto } from './dto/comments.dto';
+// import { GetUser } from 'src/auth2/decorator/get-user.decorator';
+// import { JwtAuthGuard } from 'src/auth2/jwtauth.guard';
+
+const GetUser = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest();
+    return request.user;
+  },
+);
 
 @ApiTags('Publications_user')
 @Controller('publications_user')
@@ -36,7 +46,7 @@ export class PublicationsUsersController {
     return this.publicationsService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post('/publication')
   @UseInterceptors(
     FilesInterceptor('file', undefined, multerConfig))
@@ -48,7 +58,7 @@ export class PublicationsUsersController {
     return this.publicationsService.createPub({ ...newUser, userId: user.id }, file);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post('/comment')
   async userComment(
   @GetUser() user: any,
@@ -56,7 +66,7 @@ export class PublicationsUsersController {
     return this.publicationsService.comment({ ...newComment, userId: user.id });
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Put('/comment/:idComment')
   async updateComment(
   @GetUser() user: any,
@@ -66,7 +76,7 @@ export class PublicationsUsersController {
     return this.publicationsService.updateComment(user.id, idComment, body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Delete('/comment/:idComment')
   async deleteComment(
   @GetUser() user: any,
@@ -75,13 +85,13 @@ export class PublicationsUsersController {
     return this.publicationsService.deleteComment(user.id, idComment);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Patch()
   async updateLikes(@Body() like: CreatePublicationsDto) {
     return this.publicationsService.updateLike(like);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Patch('update/:id') // actualizar publicacion (recibe un id y body)
   async updatePost(
   @GetUser() user: any,
@@ -95,7 +105,7 @@ export class PublicationsUsersController {
     return this.publicationsService.update(id, body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   async deleteById(
   @GetUser() user: any,

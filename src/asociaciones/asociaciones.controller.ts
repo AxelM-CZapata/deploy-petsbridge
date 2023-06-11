@@ -8,17 +8,26 @@ import {
   UseGuards,
   UploadedFile,
   UseInterceptors,
+  ExecutionContext,
+  createParamDecorator,
   HttpStatus,
 } from '@nestjs/common';
 import { AsociacionesService } from './asociaciones.service';
 import { CreateAsociacionDto } from './dto/create-asociacion.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { JwtAuthGuard } from 'src/auth2/jwtauth.guard';
 import { FileService } from 'src/file/file.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/file/multer.config';
-import { GetUser } from 'src/auth/decorator/get-user.decorator';
+// import { GetUser } from 'src/auth2/decorator/get-user.decorator';
 import { AuthGuard } from '@nestjs/passport';
+
+const GetUser = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest();
+    return request.user;
+  },
+);
 
 @ApiBearerAuth()
 @ApiTags('Asociaciones')
@@ -44,16 +53,16 @@ export class AsociacionesController {
     return this.asociacionesService.findOne(idAsociacion);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Delete('delete/:id')
-  async deleteById(@GetUser() user: any, @Param('id') idAsociacion: string) {
+  async deleteById( @GetUser() user: any, @Param('id') idAsociacion: string) {
     if (user.id !== idAsociacion)
       return { resp: 'Forbidden resource', status: HttpStatus.FORBIDDEN };
 
     return this.asociacionesService.delete(idAsociacion);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Put('update/:id')
   @UseInterceptors(FileInterceptor('profilePic', multerConfig))
   async updateAsociation(

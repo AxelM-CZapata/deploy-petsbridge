@@ -12,7 +12,8 @@ import { databaseProviders } from 'src/database/database.provider';
     AsociacionesService, 
     ...asociacionesProviders,
     ...databaseProviders,
-    FileService],
+    FileService,
+  ],
   exports: [AsociacionesService],
 })
 export class AsociacionesModule {}

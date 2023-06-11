@@ -10,15 +10,25 @@ import {
   UseInterceptors,
   UploadedFile,
   HttpStatus,
+  createParamDecorator,
+  ExecutionContext,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-users.dto';
-import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+// import { JwtAuthGuard } from 'src/auth2/jwtauth.guard';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { multerConfig } from 'src/file/multer.config';
 import { FileService } from 'src/file/file.service';
-import { GetUser } from 'src/auth/decorator/get-user.decorator';
+import { AuthGuard } from '@nestjs/passport';
+// import { GetUser } from 'src/auth2/decorator/get-user.decorator';
+
+const GetUser = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const request = context.switchToHttp().getRequest();
+    return request.user;
+  },
+);
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -47,7 +57,7 @@ export class UsersController {
     return this.usersService.delete(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Patch('update/:id')
   @UseInterceptors(
     FileInterceptor('profilePic', multerConfig),

@@ -1,4 +1,4 @@
-import { UserRole } from 'src/auth/dto/login.dto';
+import { UserRole } from 'src/auth2/dto/login.dto';
 export class CreateUserDto {
   id: number;
 
