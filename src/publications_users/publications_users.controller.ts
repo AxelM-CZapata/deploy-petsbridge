@@ -22,15 +22,8 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateCommentDto } from '../coments/comments.dto';
-// import { GetUser } from 'src/auth2/decorator/get-user.decorator';
+import { GetUser } from '../auth2/decorator/get-user.decorator';
 // import { JwtAuthGuard } from 'src/auth2/jwtauth.guard';
-
-const GetUser = createParamDecorator(
-  (data: unknown, context: ExecutionContext) => {
-    const request = context.switchToHttp().getRequest();
-    return request.user;
-  },
-);
 
 @ApiTags('Publications_user')
 @Controller('publications_user')
